@@ -3,7 +3,8 @@ import colors from 'colors';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import morgan from 'morgan';
-
+import AppError from './utils/appError.js';
+import globalErrorHandler from './controllers/errorController.js';
 import userRoutes from './routes/tourRoutes.js';
 import connectDB from './config/connectDB.js';
 
@@ -15,7 +16,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
 
 //routes
 app.get('/', (req, res) => {
@@ -26,12 +29,22 @@ app.get('/', (req, res) => {
 app.use('/api/v1/tours', userRoutes);
 // connect to database
 
+// error handling
+app.all('*', (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
+});
+
+app.use(globalErrorHandler);
+
 const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
-  console.log(
-    `Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow
-      .bold
-  );
+  console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold);
   connectDB();
+});
+process.on('unhandledRejection', (err) => {
+  console.log(err.name, err.message);
+  console.log('UNHANDLED REJECTION! Shutting down...');
+  //Close server & exit process
+  server.close(() => process.exit(1));
 });
