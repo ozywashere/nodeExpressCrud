@@ -7,7 +7,7 @@ import morgan from 'morgan';
 import userRoutes from './routes/tourRoutes.js';
 import connectDB from './config/connectDB.js';
 
-dotenv.config({ path: './config.env' });
+dotenv.config({ path: './.env' });
 const app = express();
 
 // middleWares

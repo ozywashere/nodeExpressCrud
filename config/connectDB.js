@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import colors from "colors";
 import dotenv from "dotenv";
-dotenv.config({ path: "./config.env" });
+dotenv.config({ path: './.env' });
 
 const DB=process.env.MONGO_URI
 const connectDB = async () => {
