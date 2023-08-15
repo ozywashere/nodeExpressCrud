@@ -5,7 +5,8 @@ import cors from 'cors';
 import morgan from 'morgan';
 import AppError from './utils/appError.js';
 import globalErrorHandler from './controllers/errorController.js';
-import userRoutes from './routes/tourRoutes.js';
+import tourRoutes from './routes/tourRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 import connectDB from './config/connectDB.js';
 
 dotenv.config({ path: './.env' });
@@ -20,13 +21,19 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+
+  next();
+});
 //routes
 app.get('/', (req, res) => {
   res.send('Hello from server side');
 });
 
 //
-app.use('/api/v1/tours', userRoutes);
+app.use('/api/v1/tours', tourRoutes);
+app.use('/api/v1/users', userRoutes);
 // connect to database
 
 // error handling
